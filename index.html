@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Werkstatt • Christian Neugebauer</title>
+    <!-- Tailwind CSS für das moderne Design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM (werden über CDNs geladen, damit kein lokales Setup nötig ist) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel für JSX Support direkt im Browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons für die Symbole -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-[#f8fafc]">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Helfer-Komponente für Icons (Browser-Version von Lucide)
+        const Icon = ({ name, className }) => {
+            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        // DATEN AUS DEINEM DOKUMENT
+        const GEMS_DATA = [
+            { id: 1, title: "Politikzyklus interaktiv", description: "Sokratischer Tutor zur Analyse politischer Konflikte mit umfassender Dokumentation und Bewertung.", link: "https://gemini.google.com/gem/1l0xsAtu7zm0S099P9w_Q7OV-J_DZRuWz?usp=sharing", category: "Politik", icon: "scale", color: "from-blue-500 to-indigo-500" },
+            { id: 2, title: "Gem Generator", description: "Promptinghilfe zur Gestaltung von individuellen GEM-Agenten im Bildungssektor (basiert auf Edugems.com).", link: "https://gemini.google.com/gem/1kH_2yF6lW2tWSzOV9Wr-7VZ_98-F960J?usp=sharing", category: "Tools", icon: "wand-2", color: "from-purple-500 to-pink-500" },
+            { id: 3, title: "Sokratischer Lerncoach", description: "Allgemeiner Sokratischer Tutor, der streng auf Hilfe zur Ergebnisfindung statt Produktion von Lösungen achtet.", link: "https://gemini.google.com/gem/1GPMWpVcJWotJDIrCT-eDfSJpSPhgnGBy?usp=sharing", category: "Lernen", icon: "graduation-cap", color: "from-emerald-500 to-teal-500" },
+            { id: 4, title: "Economics Mastermind", description: "Spezielles Tool zur Planung des Unterrichtes im Fach Wirtschaftslehre in Hessen (KCBG für Berufliche Gymnasien).", link: "https://gemini.google.com/gem/1hiBFrtNI8BFddMWcL-LZRTGj_G7_pyMT?usp=sharing", category: "Wirtschaft", icon: "trending-up", color: "from-amber-500 to-orange-500" },
+            { id: 5, title: "Vertretungsstunden Planer", description: "Tool zur schnellen Planung von (fachfremden) Vertretungsstunden unter Einbeziehung der Schüler.", link: "https://gemini.google.com/gem/1GHdiLM6HsIP8vLgGZ3XpUfQxlpDyfEwj?usp=sharing", category: "Schulalltag", icon: "clock", color: "from-rose-500 to-red-500" },
+            { id: 6, title: "Politics Mastermind", description: "Spezielles Tool zur Planung des Unterrichtes im Fach Politik und Wirtschaft in Hessen (KCGO).", link: "https://gemini.google.com/gem/11ngV6770tGKIeCDmR9dMnK-sW4qFnUrn?usp=sharing", category: "Politik", icon: "landmark", color: "from-blue-600 to-cyan-600" },
+            { id: 7, title: "Nexus politischer Entscheidungen", description: "Simulation politischer Entscheidungen aktueller Problemstellungen anhand simulierter Folgen.", link: "https://gemini.google.com/gem/1EwlDFvFQpZBih23NmdYPPwzBuR2s59wt?usp=sharing", category: "Politik", icon: "network", color: "from-violet-500 to-purple-600" },
+            { id: 8, title: "Teach a Robot (Oberstufe)", description: "Das Gem agiert als Roboter mit gelöschtem Speicher. Nutzer müssen das Wissen wiederherstellen.", link: "https://gemini.google.com/gem/1w92C8w42ecoyI5VfugDrmICxCtt7xb7h?usp=sharing", category: "Lernen", icon: "cpu", color: "from-gray-600 to-slate-800" },
+            { id: 9, title: "Teach a Robot (Mittelstufe)", description: "Angepasste Version des Robot-Szenarios für die Mittelstufe zur Wissensfestigung.", link: "https://gemini.google.com/gem/1n6ru5NhZ_STGlNvDQUatYzC5h5kztoif?usp=sharing", category: "Lernen", icon: "cpu", color: "from-slate-400 to-slate-600" },
+            { id: 10, title: "Document Architect", description: "Tool zur Umwandlung von Dokumenten oder Text in PDF nach festgelegten Designvorgaben.", link: "https://gemini.google.com/gem/1HtRVv-Om6lckykSjlApxKV-Kul-STeQg?usp=sharing", category: "Tools", icon: "file-text", color: "from-blue-400 to-indigo-400" },
+            { id: 11, title: "Lernberater Abivorbereitung", description: "Coaching zu KCBG Hessen Wirtschaftslehre inkl. Kompetenzbewertung und Persona-Wahl.", link: "https://gemini.google.com/gem/1qHprW7Nc5ZKoG3eTU1zKMk38NG54p3jh?usp=sharing", category: "Lernen", icon: "book-open", color: "from-emerald-400 to-green-600" },
+            { id: 12, title: "10 Fragen Kontest", description: "Generiert 10 Fragen mit steigender Schwierigkeit und teilt Klassen in Wettbewerbs-Gruppen ein.", link: "https://gemini.google.com/gem/1zY8dKq6LmX1bF7clQLI_zjecLdvRtpBQ?usp=sharing", category: "Gamification", icon: "trophy", color: "from-yellow-500 to-orange-400" }
+        ];
+
+        const TOOLS_LIST = [
+            { id: "material", category: "Unterricht & Material", icon: "file-text", items: [
+                { name: "NotebookLM", url: "https://notebooklm.google.com", desc: "Lerntool für Dokumente, erstellt Videos, Präsentationen und Podcasts." },
+                { name: "MagicSchool.ai", url: "https://www.magicschool.ai", desc: "All-in-One: Unterrichtspläne, differenzierte Texte und IEP-Vorschläge." },
+                { name: "Diffit", url: "https://web.diffit.me", desc: "Wandelt jeden Text in Materialpakete für spezifische Leseniveaus um." },
+                { name: "Claude.ai", url: "https://claude.ai", desc: "Besonders natürlicher Schreibstil für komplexe pädagogische Texte." },
+                { name: "Eduaide.ai", url: "https://www.eduaide.ai", desc: "Über 100 Ressourcen-Typen zur Unterrichtsgestaltung und Gamification." }
+            ]},
+            { id: "recherche", category: "Recherche & Fakten", icon: "search", items: [
+                { name: "Perplexity", url: "https://www.perplexity.ai/", desc: "Echtzeitrecherche mit Quellenangaben. Fokus auf Transparenz und Fakten." },
+                { name: "Use.ai", url: "https://use.ai/", desc: "Nutzung aller gängigen LLM Modelle im Wechsel oder Vergleich." },
+                { name: "Google Gemini", url: "https://gemini.google.com", desc: "Sprachmodell für Gems, Bilder, Videos, Präsentationen und Coding." },
+                { name: "Consensus", url: "https://consensus.app", desc: "Suchmaschine ausschließlich basierend auf wissenschaftlichen Studien." },
+                { name: "Scite.ai", url: "https://scite.ai", desc: "Prüfung der Zitierhistorie und Validität wissenschaftlicher Aussagen." }
+            ]},
+            { id: "medien", category: "Visualisierung & Medien", icon: "image", items: [
+                { name: "Napkin.ai", url: "https://www.napkin.ai/", desc: "Generierung von vielfältig anpassbaren Visualisierungen aus Texten." },
+                { name: "Playground", url: "https://playground.com/", desc: "Grafikdesign und Bildgenerierung mit Editierfunktionen." },
+                { name: "Mureka.ai", url: "https://www.mureka.ai/", desc: "Generierung von Songs und Liedern nach individuellen Vorgaben." },
+                { name: "Gamma.app", url: "https://gamma.app", desc: "Erstellt Präsentationen, Webseiten oder Dokumente aus Textvorgaben." },
+                { name: "HeyGen", url: "https://www.heygen.com", desc: "Videogenerator für sprechende Avatare (historische Persönlichkeiten)." },
+                { name: "Canva Magic Studio", url: "https://www.canva.com", desc: "KI-Design-Tools für Layouts, Text-zu-Bild und Bildbearbeitung." }
+            ]},
+            { id: "interaktion", category: "Interaktion & Aktivierung", icon: "users", items: [
+                { name: "Mizou", url: "https://mizou.com", desc: "Geschützte KI-Tutoren für Schüler (Hilfe zur Selbsthilfe)." },
+                { name: "Curipod", url: "https://curipod.com", desc: "Interaktive Präsentationsplattform mit Sofort-Auswertung." },
+                { name: "Conker.ai", url: "https://www.conker.ai", desc: "Blitzschnelles Tool für Quizze (Export in Google Forms)." },
+                { name: "DeepL Write", url: "https://www.deepl.com/write", desc: "Verbesserung von Grammatik, Stil und Ausdruck (DE/EN)." },
+                { name: "WolframAlpha", url: "https://www.wolframalpha.com", desc: "Rechnende Wissensmaschine mit schrittweisen Lösungswegen." },
+                { name: "Screenpal", url: "https://screenpal.com", desc: "KI-Videobearbeitung und automatische Untertitelung." }
+            ]},
+            { id: "fortgeschrittene", category: "Spezial-Tools", icon: "zap", items: [
+                { name: "ElevenLabs", url: "https://elevenlabs.io", desc: "Lebensechte Sprachausgabe (TTS) für Hörverstehen und Inklusion." },
+                { name: "Tome", url: "https://tome.app", desc: "Fokus auf narratives Storytelling durch KI-Layouts." },
+                { name: "v0.dev", url: "https://v0.dev", desc: "Generiert funktionale Benutzeroberflächen und Web-Code." },
+                { name: "Mapdeduce", url: "https://www.mapdeduce.com", desc: "Analysiert Dokumente auf logische Fehler und fasst Kernpunkte zusammen." }
+            ]},
+            { id: "schueler", category: "Speziell für Schüler", icon: "graduation-cap", items: [
+                { name: "Khanmigo", url: "https://www.khanacademy.org", desc: "KI-Lerncoach, der Aufgaben erklärt, ohne die Lösung zu verraten." },
+                { name: "Quizlet Q-Chat", url: "https://quizlet.com", desc: "Interaktiver Lernchat zur Abfrage von Vokabeln und Konzepten." },
+                { name: "Goblin.tools", url: "https://goblin.tools", desc: "Bricht komplexe Aufgaben in machbare Checklisten-Schritte herunter." },
+                { name: "StudySmarter", url: "https://www.studysmarter.de", desc: "Erstellt Karteikarten und Zusammenfassungen aus Unterlagen." },
+                { name: "LanguageReactor", url: "https://www.languagereactor.com", desc: "Browser-Erweiterung für YouTube/Netflix mit doppelten Untertiteln." }
+            ]}
+        ];
+
+        const WORKFLOW_GROUPS = [
+            { id: "lehrkraefte", title: "Lehrkräfte", icon: "users", items: [
+                { title: "Differenzierte Materialerstellung", desc: "Vom Fakten-Check bis zum Inklusionsmaterial.", steps: [
+                    { tool: "Perplexity", action: "Fakten finden", detail: "Sichere Fakten und aktuelle Quellen sammeln." }, 
+                    { tool: "Diffit", action: "Niveaustufen erstellen", detail: "Texte hochladen, um Niveaus und Fragen zu generieren." }, 
+                    { tool: "Napkin.ai", action: "Visualisierung", detail: "Komplexe Zusammenhänge in Diagramme umwandeln." }, 
+                    { tool: "DeepL Write", action: "Sprach-Check", detail: "Pädagogischen Tonfall optimieren." }
+                ]},
+                { title: "Sokratische Lernumgebungen", desc: "Begleitung ohne direkte Lösungsvorgabe.", steps: [
+                    { tool: "NotebookLM", action: "Strukturierung", detail: "Eigene PDFs hochladen für spezifischen Kontext." }, 
+                    { tool: "Mizou", action: "Tutor bauen", detail: "KI erstellen, die Schüler durch Fragen führt." }, 
+                    { tool: "Conker.ai", action: "Quiz", detail: "Kurzer Check am Ende der Einheit." }
+                ]},
+                { title: "Historische Kontexte", desc: "Medien lebendig gestalten.", steps: [
+                    { tool: "Gemini", action: "Skript", detail: "Interviews aus Sicht historischer Personen." }, 
+                    { tool: "Playground", action: "Bild", detail: "Passendes Porträt generieren." }, 
+                    { tool: "HeyGen", action: "Avatar-Video", detail: "Person spricht lippensynchron." }
+                ]},
+                { title: "Wissenschaftspropädeutik", desc: "Begleitung von Facharbeiten.", steps: [
+                    { tool: "Consensus", action: "Studien", detail: "Belegbare Antworten in Studien finden." }, 
+                    { tool: "Mapdeduce", action: "Analyse", detail: "Kernargumente aus langen Papern filtern." }, 
+                    { tool: "Use.ai", action: "Vergleich", detail: "Thesen von verschiedenen KIs prüfen." }
+                ]},
+                { title: "Feedbackschleifen", desc: "Individuelle Rückmeldung beim Schreiben.", steps: [
+                    { tool: "Gemini", action: "Feedback", detail: "Gegen Erwartungshorizont prüfen." }, 
+                    { tool: "DeepL Write", action: "Stil", detail: "Stilistische Eigenüberarbeitung." }, 
+                    { tool: "Napkin.ai", action: "Logik", detail: "Argumentationsstruktur visualisieren." }
+                ]}
+            ]},
+            { id: "schueler", title: "Schüler", icon: "graduation-cap", items: [
+                { title: "Lernprojekt-Struktur", steps: [
+                    { tool: "Goblin.tools", action: "To-Do", detail: "Komplexe Aufgaben in Mini-Schritte zerlegen." }, 
+                    { tool: "Perplexity", action: "Quellen", detail: "Fakten suchen und Links sichern." }, 
+                    { tool: "Napkin.ai", action: "Mindmap", detail: "Grafisch ordnen für die Gliederung." }
+                ]},
+                { title: "Vokabeltraining", steps: [
+                    { tool: "LanguageReactor", action: "Video", detail: "Unbekannte Wörter im Video speichern." }, 
+                    { tool: "Quizlet Q-Chat", action: "Dialog", detail: "Interaktiv im Chat anwenden." }, 
+                    { tool: "ElevenLabs", action: "Hören", detail: "Korrekte Aussprache verinnerlichen." }
+                ]},
+                { title: "Mathe-Problemlösung", steps: [
+                    { tool: "WolframAlpha", action: "Weg", detail: "Schritte statt nur Ergebnisse sehen." }, 
+                    { tool: "Khanmigo", action: "Fragen", detail: "Erklärungen ohne Vorsagen." }, 
+                    { tool: "Conker.ai", action: "Übung", detail: "Ähnliche Übungen generieren." }
+                ]},
+                { title: "Prüfungsvorbereitung", steps: [
+                    { tool: "StudySmarter", action: "Lernplan", detail: "Karten aus Unterlagen erstellen." }, 
+                    { tool: "Quizlet Q-Chat", action: "Abfrage", detail: "KI-gestützte Abfrage des Wissens." }, 
+                    { tool: "NotebookLM", action: "Podcast", detail: "Lernzettel als Audio hören." }
+                ]},
+                { title: "Textoptimierung", steps: [
+                    { tool: "DeepL Write", action: "Stil", detail: "Eigene Texte fehlerfrei machen." }, 
+                    { tool: "Gemini", action: "Feedback", detail: "Gegenargumente suchen lassen." }
+                ]},
+                { title: "Sachtextanalyse", steps: [
+                    { tool: "Mapdeduce", action: "Logik", detail: "Kernargumente sofort identifizieren." }, 
+                    { tool: "Perplexity", action: "Fakten", detail: "Namen und Daten verifizieren." }
+                ]},
+                { title: "Wissens-Mapping", steps: [
+                    { tool: "NotebookLM", action: "Begriffe", detail: "Konzepte extrahieren lassen." }, 
+                    { tool: "Napkin.ai", action: "Diagramm", detail: "Ober- und Unterbegriffe ordnen." }
+                ]},
+                { title: "Peer-Review", steps: [
+                    { tool: "Gemini", action: "Review", detail: "KI als kritischer Mitschüler nutzen." }, 
+                    { tool: "Claude", action: "Finale", detail: "Wissenschaftlichen Ton prüfen." }
+                ]},
+                { title: "Interaktionstraining", steps: [
+                    { tool: "Claude", action: "Gespräch", detail: "Simulierte Rollenspiele führen." }, 
+                    { tool: "ElevenLabs", action: "Audio", detail: "KI-Antworten laut anhören." }
+                ]}
+            ]}
+        ];
+
+        const Modal = ({ title, isOpen, onClose, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
+                        <div className="flex items-center justify-between p-6 border-b border-slate-100">
+                            <h3 className="text-xl font-black tracking-tight">{title}</h3>
+                            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                                <Icon name="x" className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <div className="p-8 overflow-y-auto text-slate-600 leading-relaxed space-y-4">
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const HorizontalNav = ({ items, activeId, onSelect }) => (
+            <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-2 px-2 items-center justify-center">
+                <div className="flex bg-white/60 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-sm min-w-max">
+                    {items.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => onSelect(item.id)}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap ${
+                                activeId === item.id 
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-200 scale-105' 
+                                : 'text-slate-500 hover:bg-white hover:text-blue-600'
+                            }`}
+                        >
+                            <Icon name={item.icon || 'circle'} className="w-4 h-4" />
+                            <span>{item.label || item.category || item.title}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('gems');
+            const [gemFilter, setGemFilter] = useState('Alle');
+            const [activeToolboxCat, setActiveToolboxCat] = useState('material');
+            const [activeWorkflowGroup, setActiveWorkflowGroup] = useState('lehrkraefte');
+            const [showImpressum, setShowImpressum] = useState(false);
+            const [showDatenschutz, setShowDatenschutz] = useState(false);
+
+            const gemCategories = ['Alle', ...new Set(GEMS_DATA.map(g => g.category))];
+            const filteredGems = gemFilter === 'Alle' ? GEMS_DATA : GEMS_DATA.filter(g => g.category === gemFilter);
+
+            return (
+                <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-100">
+                    <Modal title="Impressum" isOpen={showImpressum} onClose={() => setShowImpressum(false)}>
+                        <p className="font-bold underline text-blue-600">Angaben gemäß § 5 TMG:</p>
+                        <p className="text-lg font-black">Christian Neugebauer</p>
+                        <p className="text-slate-500 font-bold">Berufliche Schulen Bebra</p>
+                        <p className="font-bold pt-4">Kontakt:</p>
+                        <p className="flex items-center gap-2"><Icon name="mail" className="w-4 h-4" /> cneugebauer@gmx.net</p>
+                        <p className="text-xs pt-6 border-t border-slate-100 italic text-slate-400 font-medium">
+                            Verantwortlich für den Inhalt: Christian Neugebauer. Diese Webseite dient rein pädagogischen Zwecken im Rahmen der Lehrtätigkeit an den Beruflichen Schulen Bebra.
+                        </p>
+                    </Modal>
+
+                    <Modal title="Datenschutz" isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)}>
+                        <p>Statische Informationsseite. Keine Datenerhebung.</p>
+                        <p className="font-bold pt-4">Links:</p>
+                        <p>Anklicken externer Links führt zu anderen Diensten. Es gelten deren Bestimmungen.</p>
+                    </Modal>
+
+                    <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-[60] py-4 shadow-sm">
+                        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-200">
+                                    <Icon name="sparkles" className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-lg font-black tracking-tighter uppercase leading-none">KI-WERKSTATT</h1>
+                                    <p className="text-[9px] text-slate-400 font-bold tracking-widest mt-0.5 uppercase">Christian Neugebauer • BSB</p>
+                                </div>
+                            </div>
+                            <HorizontalNav 
+                                items={[
+                                    { id: 'gems', label: 'Eigene Gems', icon: 'layout' },
+                                    { id: 'tools', label: 'KI-Toolbox', icon: 'search' },
+                                    { id: 'workflows', label: 'Workflows', icon: 'rocket' }
+                                ]}
+                                activeId={activeTab}
+                                onSelect={setActiveTab}
+                            />
+                        </div>
+                    </header>
+
+                    <main className="max-w-7xl mx-auto px-6 py-12">
+                        {activeTab === 'gems' && (
+                            <div className="animate-in">
+                                <div className="mb-10 text-center md:text-left">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-8 h-1 bg-blue-600 rounded-full" />
+                                        <h2 className="text-3xl font-black tracking-tight uppercase">Eigene Gems</h2>
+                                    </div>
+                                    <HorizontalNav items={gemCategories.map(cat => ({ id: cat, label: cat }))} activeId={gemFilter} onSelect={setGemFilter} />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {filteredGems.map(gem => (
+                                        <div key={gem.id} className="bg-white border border-slate-200 rounded-3xl p-6 hover:border-blue-400 hover:shadow-xl transition-all flex flex-col h-full shadow-sm group">
+                                            <div className={`inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br ${gem.color} mb-4 text-white shadow-md`}>
+                                                <Icon name={gem.icon} className="w-6 h-6" />
+                                            </div>
+                                            <div className="flex-grow">
+                                                <span className="text-[10px] uppercase font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">{gem.category}</span>
+                                                <h3 className="text-lg font-bold mt-3 mb-2 group-hover:text-blue-600 transition-colors">{gem.title}</h3>
+                                                <p className="text-slate-500 text-sm mb-6 leading-relaxed">{gem.description}</p>
+                                            </div>
+                                            <a href={gem.link} target="_blank" className="flex items-center justify-center gap-2 w-full py-3 bg-slate-900 hover:bg-blue-600 text-white rounded-2xl font-bold transition-all shadow-sm">
+                                                Gem öffnen <Icon name="external-link" className="w-4 h-4" />
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'tools' && (
+                            <div className="animate-in">
+                                <div className="mb-12">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-8 h-1 bg-blue-600 rounded-full" />
+                                        <h2 className="text-3xl font-black tracking-tight uppercase">KI Toolbox</h2>
+                                    </div>
+                                    <HorizontalNav items={TOOLS_LIST} activeId={activeToolboxCat} onSelect={setActiveToolboxCat} />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {TOOLS_LIST.find(c => c.id === activeToolboxCat).items.map((tool, idx) => (
+                                        <a key={idx} href={tool.url} target="_blank" className="p-6 bg-white border border-slate-200 rounded-3xl hover:shadow-xl hover:border-blue-400 transition-all shadow-sm flex flex-col justify-between group">
+                                            <div>
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <h4 className="font-bold text-lg group-hover:text-blue-600 transition-colors">{tool.name}</h4>
+                                                    <Icon name="external-link" className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
+                                                </div>
+                                                <p className="text-sm text-slate-500 font-medium">{tool.desc}</p>
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'workflows' && (
+                            <div className="animate-in">
+                                <div className="mb-12">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-8 h-1 bg-blue-600 rounded-full" />
+                                        <h2 className="text-3xl font-black tracking-tight uppercase">Workflows</h2>
+                                    </div>
+                                    <HorizontalNav items={WORKFLOW_GROUPS.map(g => ({ id: g.id, label: g.title, icon: g.icon }))} activeId={activeWorkflowGroup} onSelect={setActiveWorkflowGroup} />
+                                </div>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                    {WORKFLOW_GROUPS.find(g => g.id === activeWorkflowGroup).items.map((wf, idx) => (
+                                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-full flex flex-col group hover:border-blue-400 transition-all">
+                                            <h4 className="font-black text-2xl text-slate-900 mb-2 relative z-10">{wf.title}</h4>
+                                            <p className="text-slate-500 text-sm italic mb-8 relative z-10 border-l-2 border-slate-100 pl-3">{wf.desc}</p>
+                                            <div className="space-y-8 relative z-10 flex-grow">
+                                                {wf.steps.map((step, sIdx) => (
+                                                    <div key={sIdx} className="relative">
+                                                        <div className="flex items-start gap-5">
+                                                            <div className={`w-10 h-10 rounded-2xl ${activeWorkflowGroup === 'lehrkraefte' ? 'bg-blue-50' : 'bg-emerald-50'} flex items-center justify-center shrink-0 border border-current font-black text-sm`}>{sIdx + 1}</div>
+                                                            <div className="flex-grow pt-1">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="text-sm font-black text-slate-900">{step.tool}</span>
+                                                                    <div className="h-px bg-slate-100 flex-grow"></div>
+                                                                </div>
+                                                                <div className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">{step.action}</div>
+                                                                <p className="text-sm text-slate-500 font-medium bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">{step.detail}</p>
+                                                            </div>
+                                                        </div>
+                                                        {sIdx < wf.steps.length - 1 && <div className="absolute left-5 top-10 w-px h-10 bg-slate-100 ml-[-0.5px]"></div>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    <footer className="bg-white border-t border-slate-200 py-16 mt-20">
+                        <div className="max-w-7xl mx-auto px-6 text-center">
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-10 mb-12">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-slate-900 p-2 rounded-xl"><Icon name="sparkles" className="w-5 h-5 text-white" /></div>
+                                    <span className="font-black text-xl tracking-tighter uppercase">KI-WERKSTATT</span>
+                                </div>
+                                <div className="flex gap-8 text-xs font-black text-slate-400 uppercase tracking-widest">
+                                    <button onClick={() => setShowImpressum(true)} className="hover:text-blue-600">Impressum</button>
+                                    <button onClick={() => setShowDatenschutz(true)} className="hover:text-blue-600">Datenschutz</button>
+                                    <a href="mailto:cneugebauer@gmx.net" className="hover:text-blue-600 flex items-center gap-2"><Icon name="mail" className="w-4 h-4" /> Kontakt</a>
+                                </div>
+                            </div>
+                            <p className="text-sm text-slate-500 font-black uppercase tracking-tight">Christian Neugebauer • Berufliche Schulen Bebra</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
