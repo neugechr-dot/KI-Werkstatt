@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KI-Werkstatt • Christian Neugebauer</title>
-    <!-- Tailwind CSS für das moderne Design -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM (werden über CDNs geladen, damit kein lokales Setup nötig ist) -->
+    <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel für JSX Support direkt im Browser -->
+    <!-- Babel für JSX Support -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons für die Symbole -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -26,26 +26,26 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        // Helfer-Komponente für Icons (Browser-Version von Lucide)
         const Icon = ({ name, className }) => {
             useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
             return <i data-lucide={name} className={className}></i>;
         };
 
-        // DATEN AUS DEINEM DOKUMENT
+        // --- VOLLSTÄNDIGE DATEN AUS DEM DOKUMENT ---
+
         const GEMS_DATA = [
             { id: 1, title: "Politikzyklus interaktiv", description: "Sokratischer Tutor zur Analyse politischer Konflikte mit umfassender Dokumentation und Bewertung.", link: "https://gemini.google.com/gem/1l0xsAtu7zm0S099P9w_Q7OV-J_DZRuWz?usp=sharing", category: "Politik", icon: "scale", color: "from-blue-500 to-indigo-500" },
             { id: 2, title: "Gem Generator", description: "Promptinghilfe zur Gestaltung von individuellen GEM-Agenten im Bildungssektor (basiert auf Edugems.com).", link: "https://gemini.google.com/gem/1kH_2yF6lW2tWSzOV9Wr-7VZ_98-F960J?usp=sharing", category: "Tools", icon: "wand-2", color: "from-purple-500 to-pink-500" },
             { id: 3, title: "Sokratischer Lerncoach", description: "Allgemeiner Sokratischer Tutor, der streng auf Hilfe zur Ergebnisfindung statt Produktion von Lösungen achtet.", link: "https://gemini.google.com/gem/1GPMWpVcJWotJDIrCT-eDfSJpSPhgnGBy?usp=sharing", category: "Lernen", icon: "graduation-cap", color: "from-emerald-500 to-teal-500" },
             { id: 4, title: "Economics Mastermind", description: "Spezielles Tool zur Planung des Unterrichtes im Fach Wirtschaftslehre in Hessen (KCBG für Berufliche Gymnasien).", link: "https://gemini.google.com/gem/1hiBFrtNI8BFddMWcL-LZRTGj_G7_pyMT?usp=sharing", category: "Wirtschaft", icon: "trending-up", color: "from-amber-500 to-orange-500" },
-            { id: 5, title: "Vertretungsstunden Planer", description: "Tool zur schnellen Planung von (fachfremden) Vertretungsstunden unter Einbeziehung der Schüler.", link: "https://gemini.google.com/gem/1GHdiLM6HsIP8vLgGZ3XpUfQxlpDyfEwj?usp=sharing", category: "Schulalltag", icon: "clock", color: "from-rose-500 to-red-500" },
-            { id: 6, title: "Politics Mastermind", description: "Spezielles Tool zur Planung des Unterrichtes im Fach Politik und Wirtschaft in Hessen (KCGO).", link: "https://gemini.google.com/gem/11ngV6770tGKIeCDmR9dMnK-sW4qFnUrn?usp=sharing", category: "Politik", icon: "landmark", color: "from-blue-600 to-cyan-600" },
-            { id: 7, title: "Nexus politischer Entscheidungen", description: "Simulation politischer Entscheidungen aktueller Problemstellungen anhand simulierter Folgen.", link: "https://gemini.google.com/gem/1EwlDFvFQpZBih23NmdYPPwzBuR2s59wt?usp=sharing", category: "Politik", icon: "network", color: "from-violet-500 to-purple-600" },
+            { id: 5, title: "Vertretungsstunden Planer", description: "Tool zur schnellen Planung von Vertretungsstunden mit Schülereinbeziehung und verschiedenen Gestaltungsvarianten.", link: "https://gemini.google.com/gem/1GHdiLM6HsIP8vLgGZ3XpUfQxlpDyfEwj?usp=sharing", category: "Schulalltag", icon: "clock", color: "from-rose-500 to-red-500" },
+            { id: 6, title: "Politics Mastermind", description: "Spezielles Tool zur Planung des Unterrichtes im Fach Politik und Wirtschaft in Hessen (KCGO).", link: "https://gemini.google.com/gem/11ngV6770tGKIeCDmR9dMnK-sW4qFqUrn?usp=sharing", category: "Politik", icon: "landmark", color: "from-blue-600 to-cyan-600" },
+            { id: 7, title: "Nexus politischer Entscheidungen", description: "Simulation politischer Entscheidungen anhand simulierter Folgen zur Verdeutlichung politischer Komplexität.", link: "https://gemini.google.com/gem/1EwlDFvFQpZBih23NmdYPPwzBuR2s59wt?usp=sharing", category: "Politik", icon: "network", color: "from-violet-500 to-purple-600" },
             { id: 8, title: "Teach a Robot (Oberstufe)", description: "Das Gem agiert als Roboter mit gelöschtem Speicher. Nutzer müssen das Wissen wiederherstellen.", link: "https://gemini.google.com/gem/1w92C8w42ecoyI5VfugDrmICxCtt7xb7h?usp=sharing", category: "Lernen", icon: "cpu", color: "from-gray-600 to-slate-800" },
             { id: 9, title: "Teach a Robot (Mittelstufe)", description: "Angepasste Version des Robot-Szenarios für die Mittelstufe zur Wissensfestigung.", link: "https://gemini.google.com/gem/1n6ru5NhZ_STGlNvDQUatYzC5h5kztoif?usp=sharing", category: "Lernen", icon: "cpu", color: "from-slate-400 to-slate-600" },
-            { id: 10, title: "Document Architect", description: "Tool zur Umwandlung von Dokumenten oder Text in PDF nach festgelegten Designvorgaben.", link: "https://gemini.google.com/gem/1HtRVv-Om6lckykSjlApxKV-Kul-STeQg?usp=sharing", category: "Tools", icon: "file-text", color: "from-blue-400 to-indigo-400" },
+            { id: 10, title: "Document Architect", description: "Tool zur Umwandlung von Text in PDF nach festgelegten technischen Designvorgaben.", link: "https://gemini.google.com/gem/1HtRVv-Om6lckykSjlApxKV-Kul-STeQg?usp=sharing", category: "Tools", icon: "file-text", color: "from-blue-400 to-indigo-400" },
             { id: 11, title: "Lernberater Abivorbereitung", description: "Coaching zu KCBG Hessen Wirtschaftslehre inkl. Kompetenzbewertung und Persona-Wahl.", link: "https://gemini.google.com/gem/1qHprW7Nc5ZKoG3eTU1zKMk38NG54p3jh?usp=sharing", category: "Lernen", icon: "book-open", color: "from-emerald-400 to-green-600" },
-            { id: 12, title: "10 Fragen Kontest", description: "Generiert 10 Fragen mit steigender Schwierigkeit und teilt Klassen in Wettbewerbs-Gruppen ein.", link: "https://gemini.google.com/gem/1zY8dKq6LmX1bF7clQLI_zjecLdvRtpBQ?usp=sharing", category: "Gamification", icon: "trophy", color: "from-yellow-500 to-orange-400" }
+            { id: 12, title: "10 Fragen Kontest", description: "Generiert Fragen mit steigender Schwierigkeit und teilt die Klasse in spielerische Wettbewerbs-Gruppen ein.", link: "https://gemini.google.com/gem/1zY8dKq6LmX1bF7clQLI_zjecLdvRtpBQ?usp=sharing", category: "Gamification", icon: "trophy", color: "from-yellow-500 to-orange-400" }
         ];
 
         const TOOLS_LIST = [
@@ -96,73 +96,84 @@
 
         const WORKFLOW_GROUPS = [
             { id: "lehrkraefte", title: "Lehrkräfte", icon: "users", items: [
-                { title: "Differenzierte Materialerstellung", desc: "Vom Fakten-Check bis zum Inklusionsmaterial.", steps: [
-                    { tool: "Perplexity", action: "Fakten finden", detail: "Sichere Fakten und aktuelle Quellen sammeln." }, 
-                    { tool: "Diffit", action: "Niveaustufen erstellen", detail: "Texte hochladen, um Niveaus und Fragen zu generieren." }, 
-                    { tool: "Napkin.ai", action: "Visualisierung", detail: "Komplexe Zusammenhänge in Diagramme umwandeln." }, 
-                    { tool: "DeepL Write", action: "Sprach-Check", detail: "Pädagogischen Tonfall optimieren." }
+                { title: "Differenzierte Materialerstellung", desc: "Vom Fakten-Check bis zum Inklusionsmaterial für alle Niveaus.", steps: [
+                    { tool: "Perplexity", action: "Fakten finden", detail: "Sichere Fakten und aktuelle Quellen für ein Thema sammeln." }, 
+                    { tool: "Diffit", action: "Niveaustufen erstellen", detail: "Texte hochladen, um Niveaus, Zusammenfassungen und Fragen zu generieren." }, 
+                    { tool: "Napkin.ai", action: "Visualisierung", detail: "Komplexe Zusammenhänge grafisch in Diagramme oder Maps umwandeln." }, 
+                    { tool: "DeepL Write", action: "Sprach-Check", detail: "Den pädagogischen Tonfall optimieren und Fehler korrigieren." }
                 ]},
-                { title: "Sokratische Lernumgebungen", desc: "Begleitung ohne direkte Lösungsvorgabe.", steps: [
-                    { tool: "NotebookLM", action: "Strukturierung", detail: "Eigene PDFs hochladen für spezifischen Kontext." }, 
-                    { tool: "Mizou", action: "Tutor bauen", detail: "KI erstellen, die Schüler durch Fragen führt." }, 
-                    { tool: "Conker.ai", action: "Quiz", detail: "Kurzer Check am Ende der Einheit." }
+                { title: "Sokratische Lernumgebungen", desc: "Begleitung von Lernprozessen ohne direkte Lösungsvorgabe.", steps: [
+                    { tool: "NotebookLM", action: "Strukturierung", detail: "Eigene Materialien hochladen, damit die KI den Kontext versteht." }, 
+                    { tool: "Mizou", action: "Tutor bauen", detail: "KI-Tutor erstellen, der Schüler durch Fragen zur Lösung führt." }, 
+                    { tool: "Conker.ai", action: "Abschluss-Quiz", detail: "Ein kurzes Quiz zur Lernerfolgskontrolle erstellen." }
                 ]},
-                { title: "Historische Kontexte", desc: "Medien lebendig gestalten.", steps: [
-                    { tool: "Gemini", action: "Skript", detail: "Interviews aus Sicht historischer Personen." }, 
-                    { tool: "Playground", action: "Bild", detail: "Passendes Porträt generieren." }, 
-                    { tool: "HeyGen", action: "Avatar-Video", detail: "Person spricht lippensynchron." }
+                { title: "Historische Kontexte", desc: "Geschichte und Medien lebendig gestalten.", steps: [
+                    { tool: "Google Gemini", action: "Skript schreiben", detail: "Ein Interview oder Monolog für eine historische Person verfassen." }, 
+                    { tool: "Playground", action: "Bild generieren", detail: "Ein authentisches Porträt der Person erstellen." }, 
+                    { tool: "HeyGen", action: "Avatar-Video", detail: "Die Person sprechen lassen (lippensynchron zum Skript)." },
+                    { tool: "Mureka.ai", action: "Hintergrundmusik", detail: "Passende Atmosphäre durch KI-Musik erzeugen." }
                 ]},
-                { title: "Wissenschaftspropädeutik", desc: "Begleitung von Facharbeiten.", steps: [
-                    { tool: "Consensus", action: "Studien", detail: "Belegbare Antworten in Studien finden." }, 
-                    { tool: "Mapdeduce", action: "Analyse", detail: "Kernargumente aus langen Papern filtern." }, 
-                    { tool: "Use.ai", action: "Vergleich", detail: "Thesen von verschiedenen KIs prüfen." }
+                { title: "Wissenschaftspropädeutik", desc: "Methodische Begleitung wissenschaftlicher Arbeiten.", steps: [
+                    { tool: "Consensus", action: "Studien finden", detail: "Nach belegbaren Antworten in Fachpublikationen suchen." }, 
+                    { tool: "Mapdeduce", action: "Analyse", detail: "Lange Texte hochladen und Kernargumente filtern." }, 
+                    { tool: "Use.ai", action: "KI-Vergleich", detail: "Struktur und Thesen verschiedener KIs vergleichen." },
+                    { tool: "Gamma.app", action: "Präsentation", detail: "Ergebnisse in eine fertige Präsentation überführen." }
                 ]},
-                { title: "Feedbackschleifen", desc: "Individuelle Rückmeldung beim Schreiben.", steps: [
-                    { tool: "Gemini", action: "Feedback", detail: "Gegen Erwartungshorizont prüfen." }, 
-                    { tool: "DeepL Write", action: "Stil", detail: "Stilistische Eigenüberarbeitung." }, 
-                    { tool: "Napkin.ai", action: "Logik", detail: "Argumentationsstruktur visualisieren." }
+                { title: "Feedbackschleifen", desc: "Individuelle Rückmeldung im Schreibprozess.", steps: [
+                    { tool: "Google Gemini", action: "Erst-Feedback", detail: "Kriterienbasiertes Feedback zum Textentwurf geben." }, 
+                    { tool: "DeepL Write", action: "Stil optimieren", detail: "Schüler verbessern eigenständig Stil und Ausdruck." }, 
+                    { tool: "Napkin.ai", action: "Struktur-Check", detail: "Argumentationsstruktur visualisieren und prüfen." }
                 ]}
             ]},
             { id: "schueler", title: "Schüler", icon: "graduation-cap", items: [
                 { title: "Lernprojekt-Struktur", steps: [
-                    { tool: "Goblin.tools", action: "To-Do", detail: "Komplexe Aufgaben in Mini-Schritte zerlegen." }, 
-                    { tool: "Perplexity", action: "Quellen", detail: "Fakten suchen und Links sichern." }, 
-                    { tool: "Napkin.ai", action: "Mindmap", detail: "Grafisch ordnen für die Gliederung." }
+                    { tool: "Goblin.tools", action: "To-Do Liste", detail: "Komplexe Aufgaben in winzige Schritte zerlegen." }, 
+                    { tool: "Perplexity", action: "Recherche", detail: "Fakten suchen und Quellen für das Verzeichnis sichern." }, 
+                    { tool: "Napkin.ai", action: "Mindmap", detail: "Informationen für die Gliederung grafisch ordnen." }
                 ]},
                 { title: "Vokabeltraining", steps: [
-                    { tool: "LanguageReactor", action: "Video", detail: "Unbekannte Wörter im Video speichern." }, 
-                    { tool: "Quizlet Q-Chat", action: "Dialog", detail: "Interaktiv im Chat anwenden." }, 
-                    { tool: "ElevenLabs", action: "Hören", detail: "Korrekte Aussprache verinnerlichen." }
+                    { tool: "LanguageReactor", action: "Kontext-Lernen", detail: "Wörter direkt aus YouTube- oder Netflix-Videos lernen." }, 
+                    { tool: "Quizlet Q-Chat", action: "Dialog-Übung", detail: "Wörter in einem interaktiven Chat aktiv anwenden." }, 
+                    { tool: "ElevenLabs", action: "Hörtraining", detail: "Korrekte Aussprache durch KI-Stimmen trainieren." }
                 ]},
                 { title: "Mathe-Problemlösung", steps: [
-                    { tool: "WolframAlpha", action: "Weg", detail: "Schritte statt nur Ergebnisse sehen." }, 
-                    { tool: "Khanmigo", action: "Fragen", detail: "Erklärungen ohne Vorsagen." }, 
-                    { tool: "Conker.ai", action: "Übung", detail: "Ähnliche Übungen generieren." }
+                    { tool: "WolframAlpha", action: "Lösungsweg", detail: "Rechenschritte statt nur das Ergebnis verstehen." }, 
+                    { tool: "Khanmigo", action: "Verständnis", detail: "Fragen stellen, ohne dass die KI die Lösung verrät." }, 
+                    { tool: "Conker.ai", action: "Übungen", detail: "Zusätzliche Aufgaben zum Üben generieren." }
                 ]},
-                { title: "Prüfungsvorbereitung", steps: [
-                    { tool: "StudySmarter", action: "Lernplan", detail: "Karten aus Unterlagen erstellen." }, 
-                    { tool: "Quizlet Q-Chat", action: "Abfrage", detail: "KI-gestützte Abfrage des Wissens." }, 
-                    { tool: "NotebookLM", action: "Podcast", detail: "Lernzettel als Audio hören." }
+                { title: "Präsentations-Design", steps: [
+                    { tool: "NotebookLM", action: "Gliederung", detail: "Notizen hochladen und Struktur vorschlagen lassen." }, 
+                    { tool: "Gamma.app", action: "Folienbau", detail: "Gliederung in ein fertiges Design umwandeln." }, 
+                    { tool: "Playground", action: "Bilder", detail: "Einzigartige, urheberrechtsfreie Bilder generieren." }
                 ]},
                 { title: "Textoptimierung", steps: [
-                    { tool: "DeepL Write", action: "Stil", detail: "Eigene Texte fehlerfrei machen." }, 
-                    { tool: "Gemini", action: "Feedback", detail: "Gegenargumente suchen lassen." }
+                    { tool: "DeepL Write", action: "Stil & Grammatik", detail: "Eigene Texte fehlerfrei und eleganter formulieren." }, 
+                    { tool: "Google Gemini", action: "Feedback", detail: "Logik und Gegenargumente prüfen lassen." }
+                ]},
+                { title: "Prüfungsvorbereitung", steps: [
+                    { tool: "StudySmarter", action: "Lernplan", detail: "Automatisch Karten aus Unterlagen erstellen." }, 
+                    { tool: "Quizlet Q-Chat", action: "Abfrage", detail: "Sich vom KI-Chat zum Stoff prüfen lassen." }, 
+                    { tool: "NotebookLM", action: "Podcast", detail: "Einen Lern-Podcast aus Notizen generieren." }
                 ]},
                 { title: "Sachtextanalyse", steps: [
-                    { tool: "Mapdeduce", action: "Logik", detail: "Kernargumente sofort identifizieren." }, 
-                    { tool: "Perplexity", action: "Fakten", detail: "Namen und Daten verifizieren." }
+                    { tool: "Mapdeduce", action: "Logik-Check", detail: "Kernargumente und Widersprüche identifizieren." }, 
+                    { tool: "Perplexity", action: "Faktenrecherche", detail: "Hintergrundinfos zu Daten und Namen prüfen." }, 
+                    { tool: "Napkin.ai", action: "Grafik", detail: "Argumentationsstruktur als Flussdiagramm darstellen." }
                 ]},
                 { title: "Wissens-Mapping", steps: [
-                    { tool: "NotebookLM", action: "Begriffe", detail: "Konzepte extrahieren lassen." }, 
-                    { tool: "Napkin.ai", action: "Diagramm", detail: "Ober- und Unterbegriffe ordnen." }
+                    { tool: "NotebookLM", action: "Begriffe", detail: "Fachbegriffe aus Mitschriften extrahieren." }, 
+                    { tool: "Napkin.ai", action: "Diagramm", detail: "Begriffe in hierarchische Ordnung bringen." }, 
+                    { tool: "Google Gemini", action: "Validierung", detail: "Die fachliche Richtigkeit der Map prüfen." }
                 ]},
                 { title: "Peer-Review", steps: [
-                    { tool: "Gemini", action: "Review", detail: "KI als kritischer Mitschüler nutzen." }, 
-                    { tool: "Claude", action: "Finale", detail: "Wissenschaftlichen Ton prüfen." }
+                    { tool: "Google Gemini", action: "Simulation", detail: "KI als kritischen Mitschüler Feedback geben lassen." }, 
+                    { tool: "DeepL Write", action: "Revision", detail: "Text basierend auf Kritik überarbeiten." }, 
+                    { tool: "Claude", action: "Finalisierung", detail: "Auf wissenschaftlichen Tonfall prüfen." }
                 ]},
                 { title: "Interaktionstraining", steps: [
-                    { tool: "Claude", action: "Gespräch", detail: "Simulierte Rollenspiele führen." }, 
-                    { tool: "ElevenLabs", action: "Audio", detail: "KI-Antworten laut anhören." }
+                    { tool: "Claude", action: "Rollenspiel", detail: "Bewerbungs- oder Fachgespräche simulieren." }, 
+                    { tool: "ElevenLabs", action: "Hören", detail: "KI-Antworten laut anhören für das Hörverstehen." }, 
+                    { tool: "DeepL Write", action: "Analyse", detail: "Eigene Beiträge auf Korrektheit prüfen lassen." }
                 ]}
             ]}
         ];
@@ -221,20 +232,20 @@
             return (
                 <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-100">
                     <Modal title="Impressum" isOpen={showImpressum} onClose={() => setShowImpressum(false)}>
-                        <p className="font-bold underline text-blue-600">Angaben gemäß § 5 TMG:</p>
+                        <p className="font-bold underline text-blue-600 uppercase tracking-tight">Angaben gemäß § 5 TMG:</p>
                         <p className="text-lg font-black">Christian Neugebauer</p>
                         <p className="text-slate-500 font-bold">Berufliche Schulen Bebra</p>
                         <p className="font-bold pt-4">Kontakt:</p>
-                        <p className="flex items-center gap-2"><Icon name="mail" className="w-4 h-4" /> cneugebauer@gmx.net</p>
+                        <p className="flex items-center gap-2 font-medium"><Icon name="mail" className="w-4 h-4" /> cneugebauer@gmx.net</p>
                         <p className="text-xs pt-6 border-t border-slate-100 italic text-slate-400 font-medium">
                             Verantwortlich für den Inhalt: Christian Neugebauer. Diese Webseite dient rein pädagogischen Zwecken im Rahmen der Lehrtätigkeit an den Beruflichen Schulen Bebra.
                         </p>
                     </Modal>
 
                     <Modal title="Datenschutz" isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)}>
-                        <p>Statische Informationsseite. Keine Datenerhebung.</p>
-                        <p className="font-bold pt-4">Links:</p>
-                        <p>Anklicken externer Links führt zu anderen Diensten. Es gelten deren Bestimmungen.</p>
+                        <p className="font-medium">Diese Webseite ist eine rein statische Informationsseite. Es werden keine personenbezogenen Daten erhoben.</p>
+                        <p className="font-bold pt-4">Externe Links:</p>
+                        <p className="font-medium">Anklicken externer Links führt zu anderen Diensten. Es gelten deren Bestimmungen.</p>
                     </Modal>
 
                     <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-[60] py-4 shadow-sm">
@@ -307,7 +318,7 @@
                                                     <h4 className="font-bold text-lg group-hover:text-blue-600 transition-colors">{tool.name}</h4>
                                                     <Icon name="external-link" className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
                                                 </div>
-                                                <p className="text-sm text-slate-500 font-medium">{tool.desc}</p>
+                                                <p className="text-sm text-slate-500 font-medium leading-relaxed">{tool.desc}</p>
                                             </div>
                                         </a>
                                     ))}
@@ -326,21 +337,22 @@
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                     {WORKFLOW_GROUPS.find(g => g.id === activeWorkflowGroup).items.map((wf, idx) => (
-                                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-full flex flex-col group hover:border-blue-400 transition-all">
+                                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-full flex flex-col group hover:border-blue-400 transition-all duration-300">
+                                            <div className="absolute top-0 right-0 w-32 h-32 opacity-5 bg-blue-500 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                                             <h4 className="font-black text-2xl text-slate-900 mb-2 relative z-10">{wf.title}</h4>
-                                            <p className="text-slate-500 text-sm italic mb-8 relative z-10 border-l-2 border-slate-100 pl-3">{wf.desc}</p>
+                                            <p className="text-slate-500 text-sm italic mb-8 relative z-10 border-l-2 border-slate-100 pl-3 leading-relaxed">{wf.desc}</p>
                                             <div className="space-y-8 relative z-10 flex-grow">
                                                 {wf.steps.map((step, sIdx) => (
                                                     <div key={sIdx} className="relative">
                                                         <div className="flex items-start gap-5">
-                                                            <div className={`w-10 h-10 rounded-2xl ${activeWorkflowGroup === 'lehrkraefte' ? 'bg-blue-50' : 'bg-emerald-50'} flex items-center justify-center shrink-0 border border-current font-black text-sm`}>{sIdx + 1}</div>
+                                                            <div className={`w-10 h-10 rounded-2xl ${activeWorkflowGroup === 'lehrkraefte' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'} flex items-center justify-center shrink-0 border border-current font-black text-sm`}>{sIdx + 1}</div>
                                                             <div className="flex-grow pt-1">
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className="text-sm font-black text-slate-900">{step.tool}</span>
                                                                     <div className="h-px bg-slate-100 flex-grow"></div>
                                                                 </div>
-                                                                <div className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">{step.action}</div>
-                                                                <p className="text-sm text-slate-500 font-medium bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">{step.detail}</p>
+                                                                <div className={`text-xs font-bold uppercase tracking-widest mb-2 ${activeWorkflowGroup === 'lehrkraefte' ? 'text-blue-600' : 'text-emerald-600'}`}>{step.action}</div>
+                                                                <p className="text-sm text-slate-500 font-medium bg-slate-50/50 p-3 rounded-xl border border-slate-100/50 leading-relaxed">{step.detail}</p>
                                                             </div>
                                                         </div>
                                                         {sIdx < wf.steps.length - 1 && <div className="absolute left-5 top-10 w-px h-10 bg-slate-100 ml-[-0.5px]"></div>}
@@ -362,9 +374,9 @@
                                     <span className="font-black text-xl tracking-tighter uppercase">KI-WERKSTATT</span>
                                 </div>
                                 <div className="flex gap-8 text-xs font-black text-slate-400 uppercase tracking-widest">
-                                    <button onClick={() => setShowImpressum(true)} className="hover:text-blue-600">Impressum</button>
-                                    <button onClick={() => setShowDatenschutz(true)} className="hover:text-blue-600">Datenschutz</button>
-                                    <a href="mailto:cneugebauer@gmx.net" className="hover:text-blue-600 flex items-center gap-2"><Icon name="mail" className="w-4 h-4" /> Kontakt</a>
+                                    <button onClick={() => setShowImpressum(true)} className="hover:text-blue-600 transition-colors">Impressum</button>
+                                    <button onClick={() => setShowDatenschutz(true)} className="hover:text-blue-600 transition-colors">Datenschutz</button>
+                                    <a href="mailto:cneugebauer@gmx.net" className="hover:text-blue-600 flex items-center gap-2 transition-colors"><Icon name="mail" className="w-4 h-4" /> Kontakt</a>
                                 </div>
                             </div>
                             <p className="text-sm text-slate-500 font-black uppercase tracking-tight">Christian Neugebauer • Berufliche Schulen Bebra</p>
