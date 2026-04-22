@@ -67,10 +67,14 @@
             return <i data-lucide={name} className={className}></i>;
         };
 
-        // --- DATEN ---
+        // --- SORTIERTE DATEN (Inklusive neuer Gems gemäß Dokument) ---
         const GEMS_DATA = [
             { id: 11, title: "Lernberater Abivorbereitung Wirtschaft", description: "Individuelles Coaching zum KCBG Hessen Wirtschaftslehre. Der Agent bewertet Kompetenzniveaus und gibt am Ende umfassendes Feedback zur Weiterarbeit.", link: "https://gemini.google.com/gem/1qHprW7Nc5ZKoG3eTU1zKMk38NG54p3jh?usp=sharing", category: "Lernen", icon: "book-open" },
             { id: 1, title: "Politikzyklus interaktiv", description: "Sokratischer Tutor zur tiefgehenden Analyse politischer Konflikte. Er bietet eine strukturierte Begleitung inklusive Bewertung und Dokumentation.", link: "https://gemini.google.com/gem/1l0xsAtu7zm0S099P9w_Q7OV-J_DZRuWz?usp=sharing", category: "Politik", icon: "scale" },
+            { id: 13, title: "Dashboard Creator", description: "Das GEM baut unterrichtsbegleitende Dashboards nach vorgegebenen Parametern und bietet viele Gestaltungsoptionen aktiv an.", link: "https://gemini.google.com/gem/1xd-DH2PmOlBKxQCENbPjUtGgXMfFOl7G?usp=sharing", category: "Tools", icon: "layout-template" },
+            { id: 14, title: "Prompting Trainer", description: "Hilft bei der Verbesserung und Präzisierung von Prompts auf Basis eines Themas oder Problems, um grundlegende Prompting-Skills zu entwickeln.", link: "https://gemini.google.com/gem/1S6os6k2KTlk-sLnkCN6UjsL1sxoyTkGA?usp=sharing", category: "Tools", icon: "terminal" },
+            { id: 15, title: "Historischer Unterrichtseinstieg", description: "Sucht nach historischen Ereignissen zum aktuellen Datum, die mit deinem Stundenthema verknüpft werden können, für spannende und andere Unterrichtseinstiege.", link: "https://gemini.google.com/gem/1qrn4_17BctTizkFf9nhCLSNGf1BtwNI0?usp=sharing", category: "Tools", icon: "history" },
+            { id: 16, title: "Infoblatt Ersteller", description: "Hilft bei der Erstellung von Infoblättern, um theoretische Inhalte in der gewünschten Ausführlichkeit und Tiefe abzubilden.", link: "https://gemini.google.com/gem/1bauvJLYWkqqIVt9L5XsKa9OPGypOIGIz?usp=sharing", category: "Tools", icon: "file-text" },
             { id: 2, title: "Gem Generator", description: "Promptinghilfe zur Gestaltung von individuellen GEM-Agenten im Bildungssektor (Vielen Dank an Edugems.com).", link: "https://gemini.google.com/gem/1kH_2yF6lW2tWSzOV9Wr-7VZ_98-F960J?usp=sharing", category: "Tools", icon: "wand-2" },
             { id: 3, title: "Sokratischer Lerncoach", description: "Allgemeiner Sokratischer Tutor, der streng auf Hilfe zur Ergebnisfindung statt Produktion von Lösungen achtet.", link: "https://gemini.google.com/gem/1GPMWpVcJWotJDIrCT-eDfSJpSPhgnGBy?usp=sharing", category: "Lernen", icon: "graduation-cap" },
             { id: 4, title: "Economics Mastermind", description: "Spezielles Tool zur Planung des Unterrichtes im Fach Wirtschaftslehre in Hessen (KCBG für Berufliche Gymnasien).", link: "https://gemini.google.com/gem/1hiBFrtNI8BFddMWcL-LZRTGj_G7_pyMT?usp=sharing", category: "Wirtschaft", icon: "trending-up" },
@@ -123,7 +127,7 @@
         const WORKFLOW_GROUPS = [
             { id: "lehrkraefte", title: "Lehrkräfte", icon: "users", items: [
                 { 
-                    title: "Differenziertes Materialerstellung", 
+                    title: "Differenzierte Materialerstellung", 
                     desc: "Methodischer Weg zur Erstellung von Lernmaterial für heterogene Lerngruppen.", 
                     steps: [
                         { tool: "Perplexity", action: "Recherche", detail: "Nutze Perplexity für die Faktenprüfung. Gib komplexe Fragen ein, um verlässliche Quellen und Daten für dein Thema zu erhalten." }, 
@@ -155,13 +159,13 @@
                 { 
                     title: "Strukturierung von Lernprojekten", 
                     steps: [
-                        { tool: "Goblin.tools", action: "Magic Todo", detail: "Ein Thema wie 'Hausarbeit' eingeben und in winzige, machbare Checklisten-Schritte zerlegen lassen." }, 
+                        { tool: "Goblin.tools", action: "Magic Todo", detail: "Ein Thema wie 'Hausarbeit' eingeben und in winzige, machbare Aufgaben zerlegen lassen. Das hilft gegen Prokrastination." }, 
                         { tool: "Perplexity", action: "Quellen-Suche", detail: "Suche nach Belegen für deine Thesen. Nutze die direkten Links, um dein Literaturverzeichnis sauber aufzubauen." }, 
                         { tool: "Napkin.ai", action: "Gliederung", detail: "Bringe deine Notizen in eine visuelle Gliederung. So erkennst du logische Lücken in deiner Argumentation sofort." }
                     ] 
                 },
                 { 
-                    title: "Systematische Prüfungsvorbereitung", 
+                    title: "Strategische Prüfungsvorbereitung", 
                     steps: [
                         { tool: "StudySmarter", action: "KI-Lernplan", detail: "Scanne deine Unterlagen ein. Die KI erstellt einen Lernplan und prüft dich mit automatisch generierten Karteikarten ab." }, 
                         { tool: "Quizlet Q-Chat", action: "Wissenstest", detail: "Gehe in den Q-Chat Dialog. Erkläre der KI die Konzepte – wenn du es ihr erklären kannst, hast du es verstanden." }, 
@@ -344,7 +348,7 @@
                                 <div className="mb-14 text-center md:text-left">
                                     <div className="flex items-center gap-4 mb-8">
                                         <div className="w-12 h-2 bg-aha-orange rounded-full shadow-lg shadow-aha-orange/20" />
-                                        <h2 className="text-4xl font-extrabold tracking-tighter uppercase text-deep-slate">Workflows</h2>
+                                        <h2 className="text-4xl font-extrabold tracking-tighter uppercase text-deep-slate text-center md:text-left">Workflows</h2>
                                     </div>
                                     <HorizontalNav items={WORKFLOW_GROUPS.map(g => ({ id: g.id, label: g.title, icon: g.icon }))} activeId={activeWorkflowGroup} onSelect={setActiveWorkflowGroup} />
                                 </div>
